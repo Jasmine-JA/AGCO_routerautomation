@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Router Diagnostics</title>
+    <style>
+        :root {
+            --bg: #fdeef3;
+            --side: #f9d6e3;
+            --paper: #fffafc;
+            --ink: #3d1f2e;
+            --muted: #7d5a6b;
+            --rose: #c2437d;
+            --rose-dark: #9f3366;
+            --line: #efc3d5;
+            --ok: #2f7a4f;
+            --error-bg: #fff0f0;
+            --error-ink: #9b1c2e;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            line-height: 1.5;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 100vh;
+        }
+
+
+        /* ---------- Sidebar ---------- */
+        aside {
+            background: var(--side);
+            padding: 36px 24px;
+            border-right: 2px solid var(--line);
+        }
+        .inner {
+            position: sticky;
+            top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.9rem;
+            line-height: 1.15;
+        }
+        .subtitle { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+
+        .group h2 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+            color: var(--rose-dark);
+        }
+        .card {
+            background: var(--paper);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 6px 16px;
+        }
+
+
+        /* Device details: label on the left, value on the right */
+        dl { margin: 0; }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .row:last-child { border-bottom: 0; }
+        dt { color: var(--muted); }
+        dd { margin: 0; font-family: Consolas, "Courier New", monospace; font-size: 0.92rem; }
+
+
+        /* Command list */
+        ul { margin: 0; padding: 0; list-style: none; }
+        li {
+            padding: 9px 0;
+            border-bottom: 1px solid var(--line);
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.9rem;
+        }
+        li:last-child { border-bottom: 0; }
+
+
+        button {
+            width: 100%;
+            font: inherit;
+            font-weight: 700;
+            color: #fff;
+            background: var(--rose);
+            border: 0;
+            border-radius: 999px;
+            padding: 14px 20px;
+            cursor: pointer;
+        }
+        button:hover { background: var(--rose-dark); }
+        button:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+        button:disabled { background: var(--muted); cursor: wait; }
+
+
+        .status { margin: 10px 0 0; text-align: center; font-size: 0.9rem; color: var(--muted); }
+        .status.ok { color: var(--ok); font-weight: 700; }
+        .status.fail { color: var(--error-ink); font-weight: 700; }
+
+
+        /* ---------- Results ---------- */
+        main { padding: 40px 36px 64px; min-width: 0; }
+        main h2 {
+            margin: 0 0 16px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.4rem;
+        }
+        .error {
+            margin-bottom: 24px;
+            padding: 14px 18px;
+            background: var(--error-bg);
+            color: var(--error-ink);
+            border: 2px dashed var(--error-ink);
+            border-radius: 12px;
+        }
+        .error small { display: block; margin-top: 4px; }
+        .hint { color: var(--muted); }
+
+
+        details {
+            background: var(--paper);
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+        summary {
+            cursor: pointer;
+            padding: 12px 18px;
+            font-weight: 700;
+            color: var(--rose-dark);
+        }
+        summary:hover { background: #fdeaf1; }
+        pre {
+            margin: 0;
+            padding: 16px 18px;
+            border-top: 2px solid var(--line);
+            background: #fff;
+            color: var(--ink);
+            overflow-x: auto;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+
+        @media (max-width: 760px) {
+            .layout { grid-template-columns: 1fr; }
+            aside { border-right: 0; border-bottom: 2px solid var(--line); padding: 28px 20px; }
+            .inner { position: static; }
+            main { padding: 28px 20px 48px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside>
+            <div class="inner">
+                <div>
+                    <h1>Router diagnostics</h1>
+                    <p class="subtitle">Cisco router in the EVE-NG lab</p>
+                </div>
+
+
+                <section class="group">
+                    <h2>Device</h2>
+                    <div class="card">
+                        <dl>
+                            <div class="row"><dt>Address</dt><dd>192.168.10.35</dd></div>
+                            <div class="row"><dt>Port</dt><dd>32770</dd></div>
+                            <div class="row"><dt>Protocol</dt><dd>Telnet</dd></div>
+                        </dl>
+                    </div>
+                </section>
+
+
+                <section class="group">
+                    <h2>Commands to run</h2>
+                    <div class="card">
+                        <ul>
+                            <li>show version</li>
+                            <li>show ip interface brief</li>
+                            <li>show running-config</li>
+                        </ul>
+                    </div>
+                </section>
+
+
+                <form method="POST" id="run-form">
+                    <button type="submit" id="run-btn">Run diagnostics</button>
+                    {% if error %}
+                        <p class="status fail">Last run failed</p>
+                    {% elif results %}
+                        <p class="status ok">{{ results|length }} commands completed</p>
+                    {% else %}
+                        <p class="status">Ready</p>
+                    {% endif %}
+                </form>
+            </div>
+        </aside>
+
+
+        <main>
+            {% if error %}
+                <div class="error" role="alert">
+                    <strong>Could not run diagnostics.</strong>
+                    <small>{{ error }}</small>
+                    <small>Check that the EVE-NG lab is running and the IP and port in api.py match it.</small>
+                </div>
+            {% endif %}
+
+
+            {% if results %}
+                <h2>Results</h2>
+                {% for cmd, output in results.items() %}
+                    <details open>
+                        <summary>{{ cmd }}</summary>
+                        <pre>{{ output }}</pre>
+                    </details>
+                {% endfor %}
+            {% elif not error %}
+                <p class="hint">No results yet. Select Run diagnostics to send the commands to the router.</p>
+            {% endif %}
+        </main>
+    </div>
+
+
+    <script>
+        document.getElementById("run-form").addEventListener("submit", function () {
+            var btn = document.getElementById("run-btn");
+            btn.disabled = true;
+            btn.textContent = "Running commands...";
+        });
+    </script>
+</body>
+</html>
